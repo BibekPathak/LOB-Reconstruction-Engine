@@ -15,3 +15,7 @@ gtest_discover_tests(test_reconstructor)
 add_executable(test_binance_parser test_binance_parser.cpp)
 target_link_libraries(test_binance_parser PRIVATE lob_core gtest_main)
 gtest_discover_tests(test_binance_parser)
+
+add_executable(test_pipeline test_pipeline.cpp)
+target_link_libraries(test_pipeline PRIVATE lob_core gtest_main)
+gtest_discover_tests(test_pipeline)
