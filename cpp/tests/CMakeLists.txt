@@ -19,3 +19,7 @@ gtest_discover_tests(test_binance_parser)
 add_executable(test_pipeline test_pipeline.cpp)
 target_link_libraries(test_pipeline PRIVATE lob_core gtest_main)
 gtest_discover_tests(test_pipeline)
+
+add_executable(test_feature_engine test_feature_engine.cpp)
+target_link_libraries(test_feature_engine PRIVATE lob_core gtest_main)
+gtest_discover_tests(test_feature_engine)
