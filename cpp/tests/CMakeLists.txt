@@ -27,3 +27,11 @@ gtest_discover_tests(test_feature_engine)
 add_executable(test_snapshot test_snapshot.cpp)
 target_link_libraries(test_snapshot PRIVATE lob_core gtest_main)
 gtest_discover_tests(test_snapshot)
+
+add_executable(test_dataset_builder test_dataset_builder.cpp)
+target_link_libraries(test_dataset_builder PRIVATE lob_core gtest_main)
+gtest_discover_tests(test_dataset_builder)
+
+add_executable(test_dataset_pipeline test_dataset_pipeline.cpp)
+target_link_libraries(test_dataset_pipeline PRIVATE lob_core gtest_main)
+gtest_discover_tests(test_dataset_pipeline)
