@@ -23,3 +23,7 @@ gtest_discover_tests(test_pipeline)
 add_executable(test_feature_engine test_feature_engine.cpp)
 target_link_libraries(test_feature_engine PRIVATE lob_core gtest_main)
 gtest_discover_tests(test_feature_engine)
+
+add_executable(test_snapshot test_snapshot.cpp)
+target_link_libraries(test_snapshot PRIVATE lob_core gtest_main)
+gtest_discover_tests(test_snapshot)
