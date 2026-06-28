@@ -80,8 +80,8 @@ def train(
     lr_auc = roc_auc_score(y_test, lr_pred)
     results["logistic_regression"] = {"auc": round(lr_auc, 4)}
     print(f"  AUC: {lr_auc:.4f}")
-    joblib.dump(lr, out / "logistic_regression.pkl")
-    joblib.dump(scaler, out / "scaler.pkl")
+    joblib.dump(lr, out / f"logistic_regression_{target}.pkl")
+    joblib.dump(scaler, out / f"scaler_{target}.pkl")
 
     # ── XGBoost ──────────────────────────────────────────────────────────
     print("\n--- XGBoost ---")
@@ -100,7 +100,7 @@ def train(
     xgb_auc = roc_auc_score(y_test, xgb_pred)
     results["xgboost"] = {"auc": round(xgb_auc, 4)}
     print(f"  AUC: {xgb_auc:.4f}")
-    xgb_model.save_model(str(out / "xgboost.json"))
+    xgb_model.save_model(str(out / f"xgboost_{target}.json"))
 
     # Feature importance
     imp = xgb_model.feature_importances_
@@ -123,14 +123,14 @@ def train(
     lgb_auc = roc_auc_score(y_test, lgb_pred)
     results["lightgbm"] = {"auc": round(lgb_auc, 4)}
     print(f"  AUC: {lgb_auc:.4f}")
-    lgb_model.booster_.save_model(str(out / "lightgbm.txt"))
+    lgb_model.booster_.save_model(str(out / f"lightgbm_{target}.txt"))
 
     # ── Summary ──────────────────────────────────────────────────────────
     print("\n--- Summary ---")
     for name, r in results.items():
         print(f"  {name:25s}  AUC: {r['auc']:.4f}")
 
-    with open(out / "results.json", "w") as f:
+    with open(out / f"results_{target}.json", "w") as f:
         json.dump(results, f, indent=2)
     print(f"\nResults saved to {out}/")
 
