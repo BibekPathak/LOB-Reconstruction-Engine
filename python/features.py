@@ -10,10 +10,11 @@ def add_labels(
 ) -> pl.DataFrame:
     """Add forward-return labels to a market snapshot DataFrame.
     
-    Expects columns: ts_us, midprice (and optionally spread for sanity checks).
+    Expects columns: ts_us, midprice, microprice.
     Adds:
-      - next_return_N   : continuous forward return over N ticks
-      - label_N         : bool, mid(t+N) > mid(t)
+      - next_return_N        : continuous forward return over N ticks
+      - label_N              : bool, mid(t+N) > mid(t)
+      - microprice_change_N  : microprice(t+N) - microprice(t)
     """
     if horizon_ticks is None:
         horizon_ticks = [1, 5, 10]
@@ -21,18 +22,23 @@ def add_labels(
     df = df.sort("ts_us")
 
     mid = df["midprice"].to_numpy()
+    micro = df["microprice"].to_numpy() if "microprice" in df.columns else mid
 
     for h in horizon_ticks:
-        # Shifted midprice h steps forward
-        fwd = np.roll(mid, -h)
-        fwd[-h:] = np.nan  # last h rows have no forward data
+        fwd_mid = np.roll(mid, -h)
+        fwd_mid[-h:] = np.nan
 
-        ret = (fwd - mid) / np.maximum(mid, 1e-12)
-        label = fwd > mid
+        fwd_micro = np.roll(micro, -h)
+        fwd_micro[-h:] = np.nan
+
+        ret = (fwd_mid - mid) / np.maximum(mid, 1e-12)
+        label = fwd_mid > mid
+        mp_change = fwd_micro - micro
 
         df = df.with_columns(
             pl.Series(f"next_return_{h}", ret),
             pl.Series(f"label_{h}", label),
+            pl.Series(f"microprice_change_{h}", mp_change),
         )
 
     return df

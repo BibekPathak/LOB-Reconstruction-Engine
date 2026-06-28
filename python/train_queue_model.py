@@ -86,6 +86,7 @@ def simulate_order_features(
         fill_1ms = False
         fill_5ms = False
         fill_10ms = False
+        fill_time_us = None
 
         ts_now = row[snapshots.columns.index("ts_us")]
         for j in range(i + 1, min(i + 100, len(snapshots))):
@@ -105,6 +106,8 @@ def simulate_order_features(
                     fill_5ms = True
                 if dt <= 10_000 and not fill_10ms:
                     fill_10ms = True
+                if fill_time_us is None:
+                    fill_time_us = dt
                 break
 
         rows.append({
@@ -119,6 +122,7 @@ def simulate_order_features(
             "fill_1ms": fill_1ms,
             "fill_5ms": fill_5ms,
             "fill_10ms": fill_10ms,
+            "expected_fill_time_us": fill_time_us if fill_time_us is not None else float("nan"),
             "ts_us": ts_now,
         })
 
