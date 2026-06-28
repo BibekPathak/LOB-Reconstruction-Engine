@@ -48,6 +48,43 @@ add_library(lob_core ${LOB_SRC} ${LOB_INCLUDE})
 target_include_directories(lob_core PUBLIC include)
 target_link_libraries(lob_core PUBLIC nlohmann_json::nlohmann_json)
 
+# ── LightGBM predictor (optional) ─────────────────────────────────────────────
+
+option(ENABLE_PREDICTOR "Build ML predictor with LightGBM inference" ON)
+
+if(ENABLE_PREDICTOR)
+  # Clone LightGBM headers only (shallow, no checkout of build files)
+  FetchContent_Declare(lightgbm_src
+    GIT_REPOSITORY https://github.com/microsoft/LightGBM.git
+    GIT_TAG v4.6.0
+    GIT_SHALLOW TRUE
+  )
+  set(FETCHCONTENT_QUIET OFF)
+  FetchContent_GetProperties(lightgbm_src)
+  if(NOT lightgbm_src_POPULATED)
+    FetchContent_Populate(lightgbm_src)
+  endif()
+  target_include_directories(lob_core PUBLIC "${lightgbm_src_SOURCE_DIR}/include")
+
+  # Find pre-built lib_lightgbm.so
+  set(_lgbm_python "$ENV{HOME}/.pyenv/versions/3.12.7/lib/python3.12/site-packages/lightgbm/lib")
+  find_library(LIGHTGBM_LIB NAMES _lightgbm lightgbm_lightgbm
+    PATHS ${_lgbm_python} /usr/local/lib /usr/lib
+    NO_DEFAULT_PATH
+  )
+  if(LIGHTGBM_LIB)
+    add_library(lightgbm SHARED IMPORTED)
+    set_target_properties(lightgbm PROPERTIES IMPORTED_LOCATION ${LIGHTGBM_LIB})
+    target_link_libraries(lob_core PUBLIC lightgbm)
+    target_compile_definitions(lob_core PUBLIC LOB_ENABLE_PREDICTOR)
+    message(STATUS "LightGBM predictor enabled: ${LIGHTGBM_LIB}")
+  else()
+    message(WARNING "liblightgbm.so not found — predictor disabled")
+  endif()
+else()
+  message(STATUS "LightGBM predictor disabled")
+endif()
+
 if(USE_ARROW)
   find_package(Arrow REQUIRED)
   find_package(Parquet REQUIRED)

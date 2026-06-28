@@ -15,3 +15,7 @@ target_link_libraries(bench_pipeline PRIVATE lob_core benchmark::benchmark)
 
 add_executable(bench_itch_parser bench_itch_parser.cpp)
 target_link_libraries(bench_itch_parser PRIVATE lob_core benchmark::benchmark)
+
+add_executable(bench_predictor bench_predictor.cpp)
+target_link_libraries(bench_predictor PRIVATE lob_core benchmark::benchmark)
+target_compile_definitions(bench_predictor PRIVATE CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")

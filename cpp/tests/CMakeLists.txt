@@ -43,3 +43,8 @@ gtest_discover_tests(test_queue_model)
 add_executable(test_itch_parser test_itch_parser.cpp)
 target_link_libraries(test_itch_parser PRIVATE lob_core gtest_main)
 gtest_discover_tests(test_itch_parser)
+
+add_executable(test_predictor test_predictor.cpp)
+target_link_libraries(test_predictor PRIVATE lob_core gtest_main)
+target_compile_definitions(test_predictor PRIVATE PROJECT_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
+gtest_discover_tests(test_predictor)
