@@ -48,3 +48,8 @@ add_executable(test_predictor test_predictor.cpp)
 target_link_libraries(test_predictor PRIVATE lob_core gtest_main)
 target_compile_definitions(test_predictor PRIVATE PROJECT_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
 gtest_discover_tests(test_predictor)
+
+add_executable(test_predictor_pipeline test_predictor_pipeline.cpp)
+target_link_libraries(test_predictor_pipeline PRIVATE lob_core gtest_main)
+target_compile_definitions(test_predictor_pipeline PRIVATE PROJECT_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
+gtest_discover_tests(test_predictor_pipeline)

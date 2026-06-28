@@ -4,8 +4,12 @@
 #include "lob/reconstructor.hpp"
 #include "lob/feature_engine.hpp"
 #include <vector>
+#include <limits>
+#include <array>
 
 namespace lob {
+
+class Predictor;
 
 // A full market snapshot with book state + all features
 struct MarketSnapshot {
@@ -24,6 +28,7 @@ struct MarketSnapshot {
     double   queue_imbalance = 0.0;
     double   arrival_rate   = 0.0;
     double   cancel_rate    = 0.0;
+    double   prediction     = std::numeric_limits<double>::quiet_NaN();
 };
 
 class SnapshotEngine {
@@ -32,6 +37,8 @@ public:
     static constexpr uint64_t COUNT_THRESHOLD   = 1000;     // 1000 messages
 
     SnapshotEngine() = default;
+
+    void set_predictor(Predictor* p) { predictor_ = p; }
 
     // Check thresholds and take snapshot if either is exceeded.
     // Call after each reconstructor apply + feature engine update.
@@ -46,8 +53,10 @@ private:
     uint64_t last_ts_  = 0;
     uint64_t msg_count_ = 0;
     std::vector<MarketSnapshot> snapshots_;
+    Predictor* predictor_ = nullptr;
 
     void take(const Reconstructor& rec, const FeatureEngine& fe, uint64_t ts_us);
+    std::array<double, 7> features_from(const FeatureSet& f) const;
 };
 
 } // namespace lob

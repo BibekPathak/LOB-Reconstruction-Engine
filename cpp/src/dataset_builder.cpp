@@ -1,12 +1,13 @@
 #include "lob/dataset_builder.hpp"
 #include <algorithm>
+#include <cmath>
 
 namespace lob {
 
 std::string DatasetBuilder::csv_header() {
     return "seq,ts_us,best_bid,best_bid_qty,best_ask,best_ask_qty,"
            "midprice,spread,microprice,ofi,queue_imbalance,"
-           "arrival_rate,cancel_rate\n";
+           "arrival_rate,cancel_rate,prediction\n";
 }
 
 std::string DatasetBuilder::csv_row(const MarketSnapshot& snap) {
@@ -39,7 +40,12 @@ std::string DatasetBuilder::csv_row(const MarketSnapshot& snap) {
     row += fmt(snap.ofi) + ",";
     row += fmt_d(snap.queue_imbalance) + ",";
     row += fmt_d(snap.arrival_rate) + ",";
-    row += fmt_d(snap.cancel_rate) + "\n";
+    row += fmt_d(snap.cancel_rate) + ",";
+    if (std::isnan(snap.prediction)) {
+        row += "\n";
+    } else {
+        row += fmt_d(snap.prediction) + "\n";
+    }
     return row;
 }
 

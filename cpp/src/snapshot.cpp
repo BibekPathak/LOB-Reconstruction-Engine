@@ -1,4 +1,5 @@
 #include "lob/snapshot.hpp"
+#include "lob/predictor.hpp"
 
 namespace lob {
 
@@ -14,6 +15,12 @@ void SnapshotEngine::check(const Reconstructor& rec, const FeatureEngine& fe, ui
         msg_count_ = 0;
         first_ = false;
     }
+}
+
+std::array<double, 7> SnapshotEngine::features_from(const FeatureSet& f) const {
+    return {f.midprice, f.spread, f.microprice,
+            static_cast<double>(f.ofi),
+            f.queue_imbalance, f.arrival_rate, f.cancel_rate};
 }
 
 void SnapshotEngine::take(const Reconstructor& rec, const FeatureEngine& fe, uint64_t ts_us) {
@@ -34,6 +41,10 @@ void SnapshotEngine::take(const Reconstructor& rec, const FeatureEngine& fe, uin
     ms.queue_imbalance = f.queue_imbalance;
     ms.arrival_rate   = f.arrival_rate;
     ms.cancel_rate    = f.cancel_rate;
+
+    if (predictor_ && predictor_->is_loaded()) {
+        ms.prediction = predictor_->predict(features_from(f));
+    }
 
     snapshots_.push_back(ms);
 }
