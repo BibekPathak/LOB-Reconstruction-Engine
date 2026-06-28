@@ -35,3 +35,7 @@ gtest_discover_tests(test_dataset_builder)
 add_executable(test_dataset_pipeline test_dataset_pipeline.cpp)
 target_link_libraries(test_dataset_pipeline PRIVATE lob_core gtest_main)
 gtest_discover_tests(test_dataset_pipeline)
+
+add_executable(test_queue_model test_queue_model.cpp)
+target_link_libraries(test_queue_model PRIVATE lob_core gtest_main)
+gtest_discover_tests(test_queue_model)

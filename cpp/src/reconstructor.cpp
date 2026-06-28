@@ -67,4 +67,13 @@ BookSnapshot Reconstructor::snapshot() const {
     return s;
 }
 
+Qty Reconstructor::volume_at(Price px, Side side) const noexcept {
+    if (side == Side::Buy) {
+        auto it = bids_.find(px);
+        return it != bids_.end() ? it->second : 0;
+    }
+    auto it = asks_.find(px);
+    return it != asks_.end() ? it->second : 0;
+}
+
 } // namespace lob

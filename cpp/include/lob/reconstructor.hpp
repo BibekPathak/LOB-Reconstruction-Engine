@@ -36,6 +36,8 @@ public:
     [[nodiscard]] const auto& bids() const noexcept { return bids_; }
     [[nodiscard]] const auto& asks() const noexcept { return asks_; }
 
+    [[nodiscard]] Qty volume_at(Price px, Side side) const noexcept;
+
 private:
     // bids_ sorted descending (best bid first)
     std::map<Price, Qty, std::greater<Price>> bids_;
