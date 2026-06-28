@@ -39,3 +39,7 @@ gtest_discover_tests(test_dataset_pipeline)
 add_executable(test_queue_model test_queue_model.cpp)
 target_link_libraries(test_queue_model PRIVATE lob_core gtest_main)
 gtest_discover_tests(test_queue_model)
+
+add_executable(test_itch_parser test_itch_parser.cpp)
+target_link_libraries(test_itch_parser PRIVATE lob_core gtest_main)
+gtest_discover_tests(test_itch_parser)
