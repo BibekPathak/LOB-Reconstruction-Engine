@@ -139,6 +139,8 @@ def train(
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python train.py <dataset.parquet> [target_col]")
+        print("Usage: python train.py <dataset.parquet> [target_col] [output_dir]")
         sys.exit(1)
-    train(sys.argv[1], sys.argv[2] if len(sys.argv) > 2 else "label_1")
+    target = sys.argv[2] if len(sys.argv) > 2 else "label_1"
+    outdir = sys.argv[3] if len(sys.argv) > 3 else "../models"
+    train(sys.argv[1], target=target, output_dir=outdir)
