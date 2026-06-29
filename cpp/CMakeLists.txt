@@ -9,11 +9,11 @@ include(FetchContent)
 # ── Dependencies ─────────────────────────────────────────────────────────────
 
 FetchContent_Declare(
-  nlohmann_json
-  GIT_REPOSITORY https://github.com/nlohmann/json.git
-  GIT_TAG v3.11.3
+  simdjson
+  GIT_REPOSITORY https://github.com/simdjson/simdjson.git
+  GIT_TAG v3.9.5
 )
-FetchContent_MakeAvailable(nlohmann_json)
+FetchContent_MakeAvailable(simdjson)
 
 option(BUILD_TESTS "Build tests" ON)
 option(BUILD_BENCHMARKS "Build benchmarks" ON)
@@ -46,7 +46,7 @@ file(GLOB_RECURSE LOB_INCLUDE include/*.hpp)
 
 add_library(lob_core ${LOB_SRC} ${LOB_INCLUDE})
 target_include_directories(lob_core PUBLIC include)
-target_link_libraries(lob_core PUBLIC nlohmann_json::nlohmann_json)
+target_link_libraries(lob_core PUBLIC simdjson::simdjson)
 
 # ── LightGBM predictor (optional) ─────────────────────────────────────────────
 

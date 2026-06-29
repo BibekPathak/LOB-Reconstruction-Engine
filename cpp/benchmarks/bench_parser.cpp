@@ -31,17 +31,22 @@ static std::string make_depth_update(uint64_t seq, int num_levels) {
     return json.str();
 }
 
-// Parser benchmark
+// Parser benchmark — pre-generate JSON outside timed loop
 static void BM_BinanceParser(benchmark::State& state) {
-    // Generate a batch of JSON messages
     const int num_levels = state.range(0);
+    const int batch_size = 1000;
+    std::vector<std::string> batch(batch_size);
+    for (int i = 0; i < batch_size; ++i) {
+        batch[i] = make_depth_update(i + 1, num_levels);
+    }
     int64_t items_parsed = 0;
 
     for (auto _ : state) {
-        auto json = make_depth_update(1, num_levels);
-        auto result = BinanceParser::parse_depth_update(json);
-        items_parsed += result.messages.size();
-        benchmark::DoNotOptimize(result);
+        for (const auto& json : batch) {
+            auto result = BinanceParser::parse_depth_update(json);
+            items_parsed += result.messages.size();
+            benchmark::DoNotOptimize(result);
+        }
     }
 
     state.SetItemsProcessed(items_parsed);
@@ -51,13 +56,19 @@ BENCHMARK(BM_BinanceParser)->Arg(5)->Arg(20)->Arg(100);
 
 // Parser raw throughput (bytes processed)
 static void BM_BinanceParserBytes(benchmark::State& state) {
+    const int batch_size = 1000;
+    std::vector<std::string> batch(batch_size);
+    for (int i = 0; i < batch_size; ++i) {
+        batch[i] = make_depth_update(i + 1, 20);
+    }
     int64_t bytes = 0;
 
     for (auto _ : state) {
-        auto json = make_depth_update(1, 20);
-        bytes += json.size();
-        auto result = BinanceParser::parse_depth_update(json);
-        benchmark::DoNotOptimize(result);
+        for (const auto& json : batch) {
+            bytes += json.size();
+            auto result = BinanceParser::parse_depth_update(json);
+            benchmark::DoNotOptimize(result);
+        }
     }
 
     state.SetBytesProcessed(bytes);
