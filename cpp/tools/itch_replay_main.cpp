@@ -4,6 +4,8 @@
 #include <lob/snapshot.hpp>
 #include <lob/dataset_builder.hpp>
 #include <lob/predictor.hpp>
+#include <string>
+#include <vector>
 #include <cstdio>
 #include <cstdlib>
 #include <cstdint>
