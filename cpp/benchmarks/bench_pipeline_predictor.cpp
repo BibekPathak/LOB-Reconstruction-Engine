@@ -12,11 +12,11 @@ using namespace lob;
 
 #ifdef CMAKE_SOURCE_DIR
 static std::string model_path() {
-    return std::string(CMAKE_SOURCE_DIR) + "/models/btc/lightgbm_label_1.txt";
+    return std::string(CMAKE_SOURCE_DIR) + "/../models/v2/lightgbm_label_1.txt";
 }
 #else
 static std::string model_path() {
-    return "../models/btc/lightgbm_label_1.txt";
+    return "../models/v2/lightgbm_label_1.txt";
 }
 #endif
 

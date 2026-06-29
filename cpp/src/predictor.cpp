@@ -30,7 +30,7 @@ bool Predictor::load_model(const std::string& model_path) {
 #endif
 }
 
-double Predictor::predict(const std::array<double, 7>& features) {
+double Predictor::predict(const std::array<double, 12>& features) {
 #ifdef LOB_ENABLE_PREDICTOR
     if (!booster_) {
         return 0.0;
@@ -42,7 +42,7 @@ double Predictor::predict(const std::array<double, 7>& features) {
         features.data(),
         1,       // C_API_DTYPE_FLOAT64
         1,       // nrow
-        7,       // ncol
+        12,      // ncol
         1,       // is_row_major
         0,       // C_API_PREDICT_NORMAL
         0,       // start_iteration
@@ -61,13 +61,13 @@ double Predictor::predict(const std::array<double, 7>& features) {
 }
 
 std::vector<double> Predictor::predict_batch(
-    const std::vector<std::array<double, 7>>& features) {
+    const std::vector<std::array<double, 12>>& features) {
 #ifdef LOB_ENABLE_PREDICTOR
     if (!booster_ || features.empty()) {
         return {};
     }
     std::vector<double> flat;
-    flat.reserve(features.size() * 7);
+    flat.reserve(features.size() * 12);
     for (const auto& f : features) {
         flat.insert(flat.end(), f.begin(), f.end());
     }
@@ -78,7 +78,7 @@ std::vector<double> Predictor::predict_batch(
         flat.data(),
         1,       // C_API_DTYPE_FLOAT64
         static_cast<int32_t>(features.size()),
-        7,       // ncol
+        12,      // ncol
         1,       // is_row_major
         0,       // C_API_PREDICT_NORMAL
         0,       // start_iteration

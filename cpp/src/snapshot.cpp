@@ -17,10 +17,12 @@ void SnapshotEngine::check(const Reconstructor& rec, const FeatureEngine& fe, ui
     }
 }
 
-std::array<double, 7> SnapshotEngine::features_from(const FeatureSet& f) const {
+std::array<double, 12> SnapshotEngine::features_from(const FeatureSet& f) const {
     return {f.midprice, f.spread, f.microprice,
             static_cast<double>(f.ofi),
-            f.queue_imbalance, f.arrival_rate, f.cancel_rate};
+            f.queue_imbalance, f.arrival_rate, f.cancel_rate,
+            f.bid_slope, f.ask_slope, f.volatility,
+            f.trade_intensity, f.buy_ratio};
 }
 
 void SnapshotEngine::take(const Reconstructor& rec, const FeatureEngine& fe, uint64_t ts_us) {

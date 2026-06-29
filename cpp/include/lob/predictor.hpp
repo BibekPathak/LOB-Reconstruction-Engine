@@ -18,9 +18,9 @@ public:
     Predictor& operator=(Predictor&&) = delete;
 
     bool load_model(const std::string& model_path);
-    double predict(const std::array<double, 7>& features);
+    double predict(const std::array<double, 12>& features);
     std::vector<double> predict_batch(
-        const std::vector<std::array<double, 7>>& features);
+        const std::vector<std::array<double, 12>>& features);
 
     bool is_loaded() const { return booster_ != nullptr; }
 

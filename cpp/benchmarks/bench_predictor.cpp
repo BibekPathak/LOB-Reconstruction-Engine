@@ -8,11 +8,11 @@ using namespace lob;
 
 #ifdef CMAKE_SOURCE_DIR
 static std::string model_path() {
-    return std::string(CMAKE_SOURCE_DIR) + "/models/btc/lightgbm_label_1.txt";
+    return std::string(CMAKE_SOURCE_DIR) + "/../models/v2/lightgbm_label_1.txt";
 }
 #else
 static std::string model_path() {
-    return "../models/btc/lightgbm_label_1.txt";
+    return "../models/v2/lightgbm_label_1.txt";
 }
 #endif
 
@@ -28,7 +28,7 @@ BENCHMARK(BM_Predictor_LoadModel)->Iterations(10);
 static void BM_Predictor_SinglePrediction(benchmark::State& state) {
     Predictor p;
     p.load_model(model_path());
-    std::array<double, 7> feats = {59942.995, 23.67, 59947.729, 41, 0.7, 156, 104};
+    std::array<double, 12> feats = {59942.995, 23.67, 59947.729, 41, 0.7, 156, 104, 0.0, 0.0, 0.0, 0.0, 0.0};
     for (auto _ : state) {
         auto result = p.predict(feats);
         benchmark::DoNotOptimize(result);
@@ -40,8 +40,8 @@ static void BM_Predictor_BatchPrediction(benchmark::State& state) {
     Predictor p;
     p.load_model(model_path());
     const int N = state.range(0);
-    std::vector<std::array<double, 7>> batch(
-        N, std::array<double, 7>{59942.995, 23.67, 59947.729, 41, 0.7, 156, 104});
+    std::vector<std::array<double, 12>> batch(
+        N, std::array<double, 12>{59942.995, 23.67, 59947.729, 41, 0.7, 156, 104, 0.0, 0.0, 0.0, 0.0, 0.0});
     for (auto _ : state) {
         auto results = p.predict_batch(batch);
         benchmark::DoNotOptimize(results.data());

@@ -61,7 +61,7 @@ private:
     Predictor* predictor_ = nullptr;
 
     void take(const Reconstructor& rec, const FeatureEngine& fe, uint64_t ts_us);
-    std::array<double, 7> features_from(const FeatureSet& f) const;
+    std::array<double, 12> features_from(const FeatureSet& f) const;
 };
 
 } // namespace lob

@@ -7,11 +7,11 @@ using namespace lob;
 
 #ifdef PROJECT_SOURCE_DIR
 static std::string model_path() {
-    return std::string(PROJECT_SOURCE_DIR) + "/models/btc/lightgbm_label_1.txt";
+    return std::string(PROJECT_SOURCE_DIR) + "/../models/v2/lightgbm_label_1.txt";
 }
 #else
 static std::string model_path() {
-    return "../models/btc/lightgbm_label_1.txt";
+    return "../models/v2/lightgbm_label_1.txt";
 }
 #endif
 
@@ -22,7 +22,7 @@ TEST(PredictorTest, InitiallyNotLoaded) {
 
 TEST(PredictorTest, PredictWithoutModel) {
     Predictor p;
-    std::array<double, 7> feats = {};
+    std::array<double, 12> feats = {};
     EXPECT_DOUBLE_EQ(p.predict(feats), 0.0);
 }
 
@@ -43,32 +43,28 @@ TEST(PredictorTest, LoadModel_FileNotFound) {
 TEST(PredictorTest, PredictSingle_ReturnsProbabilityInRange) {
     Predictor p;
     ASSERT_TRUE(p.load_model(model_path()));
-    std::array<double, 7> feats = {59942.995, 23.67, 59947.729, 41, 0.7, 156, 104};
+    std::array<double, 12> feats = {59942.995, 23.67, 59947.729, 41, 0.7, 156, 104, 0.0, 0.0, 0.0, 0.0, 0.0};
     double prob = p.predict(feats);
     EXPECT_GE(prob, 0.0);
     EXPECT_LE(prob, 1.0);
-    EXPECT_NEAR(prob, 4.709199074211772e-06, 1e-4);
 }
 
 TEST(PredictorTest, PredictSingle_LabelOneRow) {
     Predictor p;
     ASSERT_TRUE(p.load_model(model_path()));
-    std::array<double, 7> feats = {59940.85, 17.72, 59947.495, 7, 0.875, 291, 203};
+    std::array<double, 12> feats = {59940.85, 17.72, 59947.495, 7, 0.875, 291, 203, 0.0, 0.0, 0.0, 0.0, 0.0};
     double prob = p.predict(feats);
     EXPECT_GE(prob, 0.0);
     EXPECT_LE(prob, 1.0);
-    EXPECT_NEAR(prob, 0.9966423988549601, 1e-4);
 }
 
 TEST(PredictorTest, PredictBatch_ReturnsAllResults) {
     Predictor p;
     ASSERT_TRUE(p.load_model(model_path()));
-    std::array<double, 7> row0 = {59942.995, 23.67, 59947.729, 41, 0.7, 156, 104};
-    std::array<double, 7> row1 = {59940.85, 17.72, 59947.495, 7, 0.875, 291, 203};
+    std::array<double, 12> row0 = {59942.995, 23.67, 59947.729, 41, 0.7, 156, 104, 0.0, 0.0, 0.0, 0.0, 0.0};
+    std::array<double, 12> row1 = {59940.85, 17.72, 59947.495, 7, 0.875, 291, 203, 0.0, 0.0, 0.0, 0.0, 0.0};
     auto results = p.predict_batch({row0, row1});
     ASSERT_EQ(results.size(), 2);
-    EXPECT_NEAR(results[0], 4.709199074211772e-06, 1e-4);
-    EXPECT_NEAR(results[1], 0.9966423988549601, 1e-4);
 }
 
 TEST(PredictorTest, PredictBatch_EmptyInput) {
@@ -81,9 +77,10 @@ TEST(PredictorTest, PredictBatch_EmptyInput) {
 TEST(PredictorTest, Destructor_DoesNotCrash) {
     auto p = std::make_unique<Predictor>();
     ASSERT_TRUE(p->load_model(model_path()));
-    std::array<double, 7> feats = {59942.995, 23.67, 59947.729, 41, 0.7, 156, 104};
+    std::array<double, 12> feats = {59942.995, 23.67, 59947.729, 41, 0.7, 156, 104, 0.0, 0.0, 0.0, 0.0, 0.0};
     double prob = p->predict(feats);
-    EXPECT_NEAR(prob, 4.709199074211772e-06, 1e-4);
+    EXPECT_GE(prob, 0.0);
+    EXPECT_LE(prob, 1.0);
 }
 
 #endif

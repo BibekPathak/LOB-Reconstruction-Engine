@@ -4,6 +4,7 @@
 #include <lob/feature_engine.hpp>
 #include <lob/snapshot.hpp>
 #include <lob/dataset_builder.hpp>
+#include <lob/predictor.hpp>
 #include <cstdio>
 #include <cstdlib>
 #include <string>
@@ -13,17 +14,18 @@ using namespace lob;
 
 
 static void usage(const char* prog) {
-    fprintf(stderr, "Usage: %s --input <raw_messages.jsonl> [--output <out.csv>]\n", prog);
+    fprintf(stderr, "Usage: %s --input <raw_messages.jsonl> [--model <model.txt>] [--output <out.csv>]\n", prog);
     fprintf(stderr, "\nIf --output is omitted, CSV is written to stdout.\n");
     exit(1);
 }
 
 int main(int argc, char** argv) {
-    std::string input_path, output_path;
+    std::string input_path, output_path, model_path;
 
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
         if (arg == "--input" && i + 1 < argc) input_path = argv[++i];
+        else if (arg == "--model" && i + 1 < argc) model_path = argv[++i];
         else if (arg == "--output" && i + 1 < argc) output_path = argv[++i];
         else usage(argv[0]);
     }
@@ -50,11 +52,24 @@ int main(int argc, char** argv) {
     fclose(f);
     fprintf(stderr, "Loaded %zu lines from %s\n", lines.size(), input_path.c_str());
 
+    // ── Predictor (optional) ──────────────────────────────────────────────
+    Predictor pred;
+    if (!model_path.empty()) {
+        if (pred.load_model(model_path)) {
+            fprintf(stderr, "Predictor loaded: %s\n", model_path.c_str());
+        } else {
+            fprintf(stderr, "Warning: failed to load model: %s\n", model_path.c_str());
+        }
+    }
+
     // ── Pipeline ─────────────────────────────────────────────────────────
     Normalizer norm;
     Reconstructor rec;
     FeatureEngine fe;
     SnapshotEngine se;
+    if (pred.is_loaded()) {
+        se.set_predictor(&pred);
+    }
 
     for (const auto& line : lines) {
         if (line.find("\"snapshot\"") != std::string::npos) {
