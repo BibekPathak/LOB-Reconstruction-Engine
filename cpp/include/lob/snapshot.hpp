@@ -26,9 +26,14 @@ struct MarketSnapshot {
     double   microprice     = 0.0;
     int64_t  ofi            = 0;
     double   queue_imbalance = 0.0;
-    double   arrival_rate   = 0.0;
-    double   cancel_rate    = 0.0;
-    double   prediction     = std::numeric_limits<double>::quiet_NaN();
+    double   arrival_rate    = 0.0;
+    double   cancel_rate     = 0.0;
+    double   bid_slope       = 0.0;
+    double   ask_slope       = 0.0;
+    double   volatility      = 0.0;
+    double   trade_intensity = 0.0;
+    double   buy_ratio       = 0.0;
+    double   prediction      = std::numeric_limits<double>::quiet_NaN();
 };
 
 class SnapshotEngine {

@@ -41,6 +41,11 @@ void SnapshotEngine::take(const Reconstructor& rec, const FeatureEngine& fe, uin
     ms.queue_imbalance = f.queue_imbalance;
     ms.arrival_rate   = f.arrival_rate;
     ms.cancel_rate    = f.cancel_rate;
+    ms.bid_slope      = f.bid_slope;
+    ms.ask_slope      = f.ask_slope;
+    ms.volatility     = f.volatility;
+    ms.trade_intensity = f.trade_intensity;
+    ms.buy_ratio      = f.buy_ratio;
 
     if (predictor_ && predictor_->is_loaded()) {
         ms.prediction = predictor_->predict(features_from(f));

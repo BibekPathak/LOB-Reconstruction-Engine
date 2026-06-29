@@ -7,7 +7,9 @@ namespace lob {
 std::string DatasetBuilder::csv_header() {
     return "seq,ts_us,best_bid,best_bid_qty,best_ask,best_ask_qty,"
            "midprice,spread,microprice,ofi,queue_imbalance,"
-           "arrival_rate,cancel_rate,prediction\n";
+           "arrival_rate,cancel_rate,"
+           "bid_slope,ask_slope,volatility,trade_intensity,buy_ratio,"
+           "prediction\n";
 }
 
 std::string DatasetBuilder::csv_row(const MarketSnapshot& snap) {
@@ -41,6 +43,11 @@ std::string DatasetBuilder::csv_row(const MarketSnapshot& snap) {
     row += fmt_d(snap.queue_imbalance) + ",";
     row += fmt_d(snap.arrival_rate) + ",";
     row += fmt_d(snap.cancel_rate) + ",";
+    row += fmt_d(snap.bid_slope) + ",";
+    row += fmt_d(snap.ask_slope) + ",";
+    row += fmt_d(snap.volatility) + ",";
+    row += fmt_d(snap.trade_intensity) + ",";
+    row += fmt_d(snap.buy_ratio) + ",";
     if (std::isnan(snap.prediction)) {
         row += "\n";
     } else {
