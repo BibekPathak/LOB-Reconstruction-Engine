@@ -196,13 +196,67 @@ SHAP values shrink significantly from label_1 to label_5 to label_10:
 This confirms that order-flow-based signals (OFI, queue imbalance) are useful only at
 sub-second horizons, while level-based signals (midprice) persist longer.
 
-## 8. Conclusions & Next Steps
+## 8. Feature Engineering v2 Results
+
+Five additional features were added to the original seven and evaluated on an
+apples-to-apples dataset (1587 BTCUSDT snapshots replayed through the C++ pipeline):
+
+| Feature | Definition |
+|---|---|
+| **bid_slope** | Linear regression slope of level_index ~ log(volume) across top 5 bid levels |
+| **ask_slope** | Same for ask side |
+| **volatility** | Std of midprice log-returns over last 10 updates |
+| **trade_intensity** | Trade events/second in rolling window |
+| **buy_ratio** | Fraction of trades that were buy-initiated |
+
+### AUC Comparison (12-feature vs 7-feature)
+
+| Target | Feat | LR AUC | XGB AUC | LGB AUC |
+|---|---|---|---|---|
+| label_1 | 7-feat | 0.6084 | 0.4481 | 0.4773 |
+| label_1 | 12-feat | **0.6144** | **0.4541** | 0.4367 |
+| **label_5** | 7-feat | 0.5573 | 0.4472 | 0.4383 |
+| **label_5** | **12-feat** | **0.7275 (+0.17)** | **0.4893 (+0.04)** | **0.5140 (+0.08)** |
+| **label_10** | 7-feat | 0.7513 | 0.4342 | 0.5593 |
+| **label_10** | **12-feat** | **0.8121 (+0.06)** | **0.5199 (+0.09)** | **0.5788 (+0.02)** |
+
+### Feature Importance (XGBoost gain)
+
+| Feature | label_1 | label_5 | label_10 |
+|---|---|---|---|
+| **volatility** <<< | **0.228** | **0.115** | 0.066 |
+| **bid_slope** <<< | 0.080 | 0.102 | **0.129** |
+| **ask_slope** <<< | 0.069 | 0.096 | 0.082 |
+| spread | 0.115 | **0.171** | **0.188** |
+| midprice | 0.128 | 0.107 | 0.129 |
+| queue_imbalance | 0.078 | 0.095 | 0.093 |
+| ofi | 0.080 | 0.093 | 0.099 |
+| arrival_rate | 0.078 | 0.072 | 0.059 |
+| cancel_rate | 0.079 | 0.064 | 0.052 |
+| microprice | 0.067 | 0.087 | 0.103 |
+| trade_intensity | 0.000 | 0.000 | 0.000 |
+| buy_ratio | 0.000 | 0.000 | 0.000 |
+
+### Key Findings
+
+- **volatility is the #1 feature for label_1** (0.228 gain) and #2 for label_5 (0.115) —
+  midprice variability strongly predicts short-term direction
+- **bid_slope** contributes meaningfully across all horizons (0.08–0.13), ranked #3–4
+- **ask_slope** contributes modestly (~0.07–0.10)
+- **trade_intensity and buy_ratio are zero** — Binance depth-only stream contains no Trade
+  messages. These features require the ITCH path (NASDAQ equities) or a combined trade+quote feed
+- **12 features significantly improve label_5 and label_10** — LR AUC jumps +0.17 and +0.06
+- V2 features account for ~31–37% of total tree importance for label_5/label_10
+
+## 9. Conclusions & Next Steps
 
 ### What Works
 - **LightGBM predicts 100ms direction with AUC 0.71** — strong evidence that LOB features contain predictive information
 - **OFI is the single most informative feature** for ultra-short-horizon prediction
 - **Logistic regression is surprisingly robust** — suggests a simple, linear signal that doesn't decay with horizon
-- C++ pipeline benchmarks at 1.5M msg/s (JSON-limited), 60 tests passing
+- **V2 features (book slope, volatility) add significant signal** — LR AUC improves +0.17 at 5-tick horizon
+- **Volatility is the top v2 feature** — #1 importance for label_1, #2 for label_5
+- C++ pipeline benchmarks at 1.5M msg/s (JSON-limited), 95 tests passing
 - Full end-to-end pipeline validated from WebSocket → Parquet → ML → analysis
 
 ### What's Needed
@@ -210,9 +264,9 @@ sub-second horizons, while level-based signals (midprice) persist longer.
 - **simdjson integration** — replace nlohmann/json for 5-10x parser speedup (currently 75% of wall time)
 - **Raw event-level queue model** — record at depth-event granularity for fill-probability calibration
 - **Transaction cost model** — incorporate 0.5-1bp cost per trade in backtest for realistic Sharpe
-- **Feature engineering** — add book slope, depth ratio at levels 2-5, and volatility
+- **Trade data** — combine depth stream with trade stream for trade_intensity and buy_ratio features
 - **Multi-asset** — extend beyond BTCUSDT to ETHUSDT and other liquid pairs
-- **Live inference** — C++ inference engine (Treelite/ONNX) to avoid Python IPC
+- **Live inference** — C++ inference engine (LightGBM C API, already implemented) with 12-feature model
 
 ### Repository Structure
 

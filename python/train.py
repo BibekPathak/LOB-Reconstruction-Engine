@@ -17,6 +17,8 @@ import joblib
 FEATURE_COLS = [
     "midprice", "spread", "microprice", "ofi",
     "queue_imbalance", "arrival_rate", "cancel_rate",
+    "bid_slope", "ask_slope", "volatility",
+    "trade_intensity", "buy_ratio",
 ]
 
 

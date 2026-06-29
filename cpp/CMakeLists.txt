@@ -103,6 +103,9 @@ endif()
 add_executable(itch_replay tools/itch_replay_main.cpp)
 target_link_libraries(itch_replay PRIVATE lob_core)
 
+add_executable(binance_replay tools/binance_replay_main.cpp)
+target_link_libraries(binance_replay PRIVATE lob_core)
+
 # ── Benchmarks ───────────────────────────────────────────────────────────────
 
 if(BUILD_BENCHMARKS)

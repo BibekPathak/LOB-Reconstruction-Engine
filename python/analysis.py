@@ -21,6 +21,8 @@ sns.set_theme(style="whitegrid")
 FEATURE_COLS = [
     "midprice", "spread", "microprice", "ofi",
     "queue_imbalance", "arrival_rate", "cancel_rate",
+    "bid_slope", "ask_slope", "volatility",
+    "trade_intensity", "buy_ratio",
 ]
 
 TARGETS = ["label_1", "label_5", "label_10"]
