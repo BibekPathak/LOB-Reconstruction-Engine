@@ -98,6 +98,11 @@ if(BUILD_TESTS)
   add_subdirectory(tests)
 endif()
 
+# ── Tools ────────────────────────────────────────────────────────────────────
+
+add_executable(itch_replay src/itch_replay_main.cpp)
+target_link_libraries(itch_replay PRIVATE lob_core)
+
 # ── Benchmarks ───────────────────────────────────────────────────────────────
 
 if(BUILD_BENCHMARKS)

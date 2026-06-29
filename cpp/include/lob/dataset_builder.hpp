@@ -18,12 +18,13 @@ public:
     void close();
     bool is_open() const noexcept { return file_.is_open(); }
 
+    // Public helpers for direct formatting (used by itch_replay for stdout)
+    static std::string csv_header();
+    static std::string csv_row(const MarketSnapshot& snap);
+
 private:
     std::ofstream file_;
     bool header_written_ = false;
-
-    static std::string csv_header();
-    static std::string csv_row(const MarketSnapshot& snap);
 };
 
 } // namespace lob
